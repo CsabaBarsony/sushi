@@ -1,0 +1,25 @@
+1. Download ASCII from here: https://www.ars.usda.gov/northeast-area/beltsville-md/beltsville-human-nutrition-research-center/nutrient-data-laboratory/docs/sr28-download-files/
+
+2: Run usda_nutrients.sql SQL query to create database
+
+3: Execute SQL query for each txt file:
+
+LOAD DATA INFILE 'my_file.txt'
+INTO TABLE my_table
+FIELDS TERMINATED BY '^'
+OPTIONALLY ENCLOSED BY '~'
+LINES TERMINATED BY '\r\n'
+
+4: Create table for enabled foods (*id, ndb_no, name)
+
+5: Create table for quick macros (food_name, macros):
+
+insert into quick_macros
+select enabled_food.name as food_name, GROUP_CONCAT(nut_data.nutr_val order by nut_data.nutr_no) as macros
+from nut_data
+join enabled_food
+on nut_data.ndb_no = enabled_food.ndb_no
+where nut_data.nutr_no = 203
+or nut_data.nutr_no = 204
+or nut_data.nutr_no = 205
+group by nut_data.ndb_no
