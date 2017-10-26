@@ -9,25 +9,26 @@ const nutrientDB = mysql.createConnection({
   database: 'usda_nutrients'
 })
 
-const queries = {
-  getSuggestions: `SELECT *
-            FROM quick_macros
-            WHERE food_name
-            LIKE ?
-            LIMIT 10`,
-}
+const db = {
+  queries: {
+    macros: (text) => {
+      const foodSearches = text.replace(/\s/g, '').split(',')
+      let result = 'select name, macros from macros '
+      foodSearches.forEach((s, i) => result += (i === 0 ? 'where ' : ' and ') + 'name like \'%' + s + '%\'')
+      result += ' limit 10'
 
-module.exports = {
-  getSuggestions: (text, callback) => {
+      return result
+    },
+  },
+  macros: (text, callback) => {
     nutrientDB.query(
-      queries.getSuggestions,
-      ['%' + text + '%'],
+      db.queries.macros(text),
+      [],
       (error, rows) => {
         if(!error) {
           callback(true, rows.map(row => {
-            console.log(row)
             return {
-              foodName: row['food_name'],
+              name: row.name,
               macros: row.macros,
             }
           }))
@@ -39,3 +40,5 @@ module.exports = {
       })
   },
 }
+
+module.exports = db

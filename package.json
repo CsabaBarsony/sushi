@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "express": "^4.15.4",
+    "mocha": "^4.0.1",
     "mysql": "^2.14.1",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-autosuggest": "^9.3.2",
+    "react-dom": "^15.6.1",
+    "react-scripts": "^1.0.14"
   },
   "scripts": {
     "start": "react-scripts start",

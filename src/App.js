@@ -1,40 +1,67 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
+import api from './api.js'
+import Autosuggest from 'react-autosuggest'
 
-function makeRequest (method, url, done) {
-  var xhr = new XMLHttpRequest();
-  xhr.open(method, url);
-  xhr.onload = function () {
-    done(null, xhr.response);
-  };
-  xhr.onerror = function () {
-    done(xhr.response);
-  };
-  xhr.send();
-}
+const renderSuggestion = suggestion =>
+  <div>
+    {suggestion.name}
+  </div>
 
 class App extends Component {
-  componentDidMount() {
-    makeRequest('GET', 'http://localhost:3000/getSuggestions/c', function (err, datums) {
-      if (err) { throw err; }
-      console.log(datums);
+  constructor(props) {
+    super(props)
+    this.state = {
+      text: '',
+      suggestions: [],
+      loading: false,
+    }
+  }
+
+  onChange = (event, { newValue }) => {
+    this.setState({
+      text: newValue
     });
+  };
+  
+  onSuggestionsFetchRequested = ({ value }) => {
+    if(value) {
+      api.getSuggestions(value, (err, suggestions) => {
+        if (err) { throw err }
+        this.setState({ suggestions: suggestions })
+      })
+    }
+    else {
+      this.setState({ suggestions: [] })
+    }
+  }
+
+  onSuggestionsClearRequested = () => {
+    this.setState({
+      suggestions: []
+    })
   }
 
   render() {
+    const inputProps = {
+      placeholder: 'Type a programming language',
+      value: this.state.text,
+      onChange: this.onChange,
+    }
+
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Autosuggest
+          suggestions={this.state.suggestions}
+          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+          getSuggestionValue={s => s.name}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputProps}
+        />
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App

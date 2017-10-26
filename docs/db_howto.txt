@@ -23,3 +23,15 @@ where nut_data.nutr_no = 203
 or nut_data.nutr_no = 204
 or nut_data.nutr_no = 205
 group by nut_data.ndb_no
+
+select food_des.long_desc, GROUP_CONCAT(nut_data.nutr_val order by nut_data.nutr_no) as macros
+from food_des
+join nut_data
+on nut_data.ndb_no = food_des.ndb_no
+where food_des.long_desc like '%cheese%'
+and
+(nut_data.nutr_no = 203
+ or nut_data.nutr_no = 204
+ or nut_data.nutr_no = 205)
+ group by nut_data.ndb_no
+ limit 10

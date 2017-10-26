@@ -8,7 +8,7 @@ const app = express()
 app.use(express.static('public'))
 
 app.get('/getSuggestions/:text', (req, res) => {
-  db.getSuggestions(req.params.text, (success, foods) => {
+  db.macros(req.params.text, (success, foods) => {
     if(success) res.send(foods)
     else res.sendStatus(500)
   })
